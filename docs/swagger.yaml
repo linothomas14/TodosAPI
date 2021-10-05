@@ -1,5 +1,11 @@
 basePath: /
 definitions:
+  main.ErrorResponse:
+    properties:
+      error:
+        example: error
+        type: string
+    type: object
   main.Todos:
     properties:
       description:
@@ -42,15 +48,27 @@ paths:
             items:
               $ref: '#/definitions/main.Todos'
             type: array
-      summary: Get details of all todos
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/main.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.ErrorResponse'
+      summary: Get all todos
       tags:
       - todos
     post:
       consumes:
       - application/json
-      description: Create a new todos with the input payload
+      description: Create a new todo with the input payload
       parameters:
-      - description: Create todos
+      - description: Create todo
         in: body
         name: todos
         required: true
@@ -65,7 +83,19 @@ paths:
             items:
               $ref: '#/definitions/main.Todos'
             type: array
-      summary: Create a new todos
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/main.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.ErrorResponse'
+      summary: Create a todo
       tags:
       - todos
 swagger: "2.0"

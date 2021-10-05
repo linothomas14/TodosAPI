@@ -43,7 +43,7 @@ var doc = `{
                 "tags": [
                     "todos"
                 ],
-                "summary": "Get details of all todos",
+                "summary": "Get all todos",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -53,11 +53,29 @@ var doc = `{
                                 "$ref": "#/definitions/main.Todos"
                             }
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/main.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/main.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/main.ErrorResponse"
+                        }
                     }
                 }
             },
             "post": {
-                "description": "Create a new todos with the input payload",
+                "description": "Create a new todo with the input payload",
                 "consumes": [
                     "application/json"
                 ],
@@ -67,10 +85,10 @@ var doc = `{
                 "tags": [
                     "todos"
                 ],
-                "summary": "Create a new todos",
+                "summary": "Create a todo",
                 "parameters": [
                     {
-                        "description": "Create todos",
+                        "description": "Create todo",
                         "name": "todos",
                         "in": "body",
                         "required": true,
@@ -88,12 +106,39 @@ var doc = `{
                                 "$ref": "#/definitions/main.Todos"
                             }
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/main.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/main.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/main.ErrorResponse"
+                        }
                     }
                 }
             }
         }
     },
     "definitions": {
+        "main.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string",
+                    "example": "error"
+                }
+            }
+        },
         "main.Todos": {
             "type": "object",
             "properties": {

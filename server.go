@@ -21,6 +21,10 @@ type Todos struct {
 	IsComplete  string `json:"is_complete" gorm:"default:false" example:"false"`
 }
 
+type ErrorResponse struct {
+	Error string `json:"error" example:"error"`
+}
+
 var db *gorm.DB
 var prevOrderID = 0
 var all_todos []Todos
@@ -35,6 +39,7 @@ var all_todos []Todos
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @host localhost:8080
 // @BasePath /
+
 func initDB() {
 	var err error
 	dsn := "root:@tcp(127.0.0.1:3306)/todosapp?charset=utf8mb4&parseTime=True&loc=Local"
@@ -60,13 +65,16 @@ func main() {
 }
 
 // GetTodos godoc
-// @Summary Get details of all todos
+// @Summary Get all todos
 // @Description Get details of all todos
 // @Tags todos
 // @Accept json
 // @Produce json
 // @Success 200 {array} Todos
 // @Router /todos [get]
+// @Failure 400 {object} ErrorResponse
+// @Failure 404 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
 func GetTodos(w http.ResponseWriter, r *http.Request) {
 	var todos []Todos
 
@@ -79,14 +87,17 @@ func GetTodos(w http.ResponseWriter, r *http.Request) {
 }
 
 // CreateTodos godoc
-// @Summary Create a new todos
-// @Description Create a new todos with the input payload
+// @Summary Create a todo
+// @Description Create a new todo with the input payload
 // @Tags todos
 // @Accept json
 // @Produce json
-// @Param todos body Todos true "Create todos"
+// @Param todos body Todos true "Create todo"
 // @Success 200 {array} Todos
 // @Router /todos [post]
+// @Failure 400 {object} ErrorResponse
+// @Failure 404 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
 func CreateTodos(w http.ResponseWriter, r *http.Request) {
 	var todos Todos
 	w.Header().Set("Content-type", "application/json")
