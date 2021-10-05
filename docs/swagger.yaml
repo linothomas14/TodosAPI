@@ -12,8 +12,8 @@ definitions:
         example: Reading book at 9 A.M
         type: string
       id:
-        example: "1"
-        type: string
+        example: 1
+        type: integer
       is_complete:
         example: "false"
         type: string

@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/gorilla/mux"
 	httpSwagger "github.com/swaggo/http-swagger"
@@ -15,7 +14,7 @@ import (
 )
 
 type Todos struct {
-	ID          string `json:"id" gorm:"primaryKey" example:"1"`
+	ID          int    `json:"id" gorm:"primaryKey" example:"1"`
 	Title       string `json:"title" example:"Reading book"`
 	Description string `json:"description" example:"Reading book at 9 A.M"`
 	IsComplete  string `json:"is_complete" gorm:"default:false" example:"false"`
@@ -44,7 +43,7 @@ func initDB() {
 	var err error
 	dsn := "root:@tcp(127.0.0.1:3306)/todosapp?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
-
+	log.Println("SUCCESS ACCESS DB")
 	if err != nil {
 		panic("failed to connect database")
 	}
@@ -102,13 +101,12 @@ func CreateTodos(w http.ResponseWriter, r *http.Request) {
 	var todos Todos
 	w.Header().Set("Content-type", "application/json")
 	err := json.NewDecoder(r.Body).Decode(&todos)
+	print(todos.ID)
 	if err != nil {
 		fmt.Println("ERROR")
 		log.Fatal(err)
 	}
+
 	db.Create(&todos)
-	prevOrderID++
-	todos.ID = strconv.Itoa(prevOrderID)
-	all_todos = append(all_todos, todos)
 	json.NewEncoder(w).Encode(todos)
 }

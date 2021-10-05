@@ -147,8 +147,8 @@ var doc = `{
                     "example": "Reading book at 9 A.M"
                 },
                 "id": {
-                    "type": "string",
-                    "example": "1"
+                    "type": "integer",
+                    "example": 1
                 },
                 "is_complete": {
                     "type": "string",
