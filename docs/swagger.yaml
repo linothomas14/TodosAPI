@@ -6,7 +6,7 @@ definitions:
         example: error
         type: string
     type: object
-  main.Todos:
+  main.Todo:
     properties:
       description:
         example: Reading book at 9 A.M
@@ -15,8 +15,8 @@ definitions:
         example: "1"
         type: string
       is_complete:
-        example: "false"
-        type: string
+        example: false
+        type: boolean
       title:
         example: Reading book
         type: string
@@ -46,20 +46,8 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/main.Todos'
+              $ref: '#/definitions/main.Todo'
             type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/main.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/main.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/main.ErrorResponse'
       summary: Get all todos
       tags:
       - todos
@@ -73,29 +61,90 @@ paths:
         name: todos
         required: true
         schema:
-          $ref: '#/definitions/main.Todos'
+          $ref: '#/definitions/main.Todo'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/main.Todo'
+      summary: Create a todo
+      tags:
+      - todos
+  /todos/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete todo
+      parameters:
+      - description: Todo id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/main.ErrorResponse'
+      summary: Delete todo
+      tags:
+      - todos
+    get:
+      consumes:
+      - application/json
+      description: Get details of todo
+      parameters:
+      - description: Todo id
+        in: path
+        name: id
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/main.Todos'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/main.ErrorResponse'
+            $ref: '#/definitions/main.Todo'
         "404":
           description: Not Found
           schema:
             $ref: '#/definitions/main.ErrorResponse'
-        "500":
-          description: Internal Server Error
+      summary: Get todo
+      tags:
+      - todos
+    put:
+      consumes:
+      - application/json
+      description: Update todo
+      parameters:
+      - description: Update todo
+        in: body
+        name: todos
+        required: true
+        schema:
+          $ref: '#/definitions/main.Todo'
+      - description: Todo id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "404":
+          description: Not Found
           schema:
             $ref: '#/definitions/main.ErrorResponse'
-      summary: Create a todo
+      summary: Update todo
       tags:
       - todos
 swagger: "2.0"
