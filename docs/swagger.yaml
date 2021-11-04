@@ -1,18 +1,27 @@
 basePath: /
 definitions:
-  main.ErrorResponse:
+  helpers.Response:
     properties:
-      error:
-        example: error
+      data:
+        type: object
+      message:
         type: string
     type: object
   main.Todo:
     properties:
       description:
-        example: Reading book at 9 A.M
         type: string
       id:
-        example: "1"
+        type: string
+      is_complete:
+        type: boolean
+      title:
+        type: string
+    type: object
+  main.TodoRequest:
+    properties:
+      description:
+        example: Reading book at 9 A.M
         type: string
       is_complete:
         example: false
@@ -45,9 +54,14 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/main.Todo'
-            type: array
+            allOf:
+            - $ref: '#/definitions/helpers.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/main.Todo'
+                  type: array
+              type: object
       summary: Get all todos
       tags:
       - todos
@@ -61,14 +75,19 @@ paths:
         name: todos
         required: true
         schema:
-          $ref: '#/definitions/main.Todo'
+          $ref: '#/definitions/main.TodoRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/main.Todo'
+            allOf:
+            - $ref: '#/definitions/helpers.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/main.Todo'
+              type: object
       summary: Create a todo
       tags:
       - todos
@@ -87,11 +106,13 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
+          schema:
+            $ref: '#/definitions/helpers.Response'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/main.ErrorResponse'
+            $ref: '#/definitions/helpers.Response'
       summary: Delete todo
       tags:
       - todos
@@ -111,11 +132,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.Todo'
+            allOf:
+            - $ref: '#/definitions/helpers.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/main.Todo'
+              type: object
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/main.ErrorResponse'
+            $ref: '#/definitions/helpers.Response'
       summary: Get todo
       tags:
       - todos
@@ -129,7 +155,7 @@ paths:
         name: todos
         required: true
         schema:
-          $ref: '#/definitions/main.Todo'
+          $ref: '#/definitions/main.TodoRequest'
       - description: Todo id
         in: path
         name: id
@@ -139,11 +165,13 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
+          schema:
+            $ref: '#/definitions/helpers.Response'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/main.ErrorResponse'
+            $ref: '#/definitions/helpers.Response'
       summary: Update todo
       tags:
       - todos
