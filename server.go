@@ -2,25 +2,28 @@ package main
 
 import (
 	"encoding/json"
-	_ "final-project-1/docs"
+	_ "todosAPI/docs"
 	"fmt"
 	"log"
 	"net/http"
 	"strconv"
+	"todosAPI/helpers"
 
 	"github.com/gorilla/mux"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
-type Todo struct {
-	ID          string `json:"id" example:"1"`
+type TodoRequest struct {
 	Title       string `json:"title" example:"Reading book"`
 	Description string `json:"description" example:"Reading book at 9 A.M"`
 	IsComplete  bool `json:"is_complete" example:"false"`
 }
 
-type ErrorResponse struct {
-	Error string `json:"error" example:"error"`
+type Todo struct {
+	ID          string `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	IsComplete  bool `json:"is_complete"`
 }
 
 var prevOrderID = 0
@@ -55,12 +58,10 @@ func main() {
 // @Tags todos
 // @Accept json
 // @Produce json
-// @Success 200 {array} Todo
+// @Success 200 {object} helpers.Response{data=[]Todo}
 // @Router /todos [get]
 func GetTodos(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(todos)
-
+	helpers.HttpResponse(w, http.StatusOK, helpers.Response{"success", todos})
 }
 
 // CreateTodo godoc
@@ -69,22 +70,21 @@ func GetTodos(w http.ResponseWriter, r *http.Request) {
 // @Tags todos
 // @Accept json
 // @Produce json
-// @Param todos body Todo true "Create todo"
-// @Success 201 {object} Todo
+// @Param todos body TodoRequest true "Create todo"
+// @Success 201 {object} helpers.Response{data=Todo}
 // @Router /todos [post]
 func CreateTodo(w http.ResponseWriter, r *http.Request) {
 	var todo Todo
-	w.Header().Set("Content-type", "application/json")
 	err := json.NewDecoder(r.Body).Decode(&todo)
 	if err != nil {
-		fmt.Println("ERROR")
-		log.Fatal(err)
+		fmt.Println("ERROR ", err.Error())
+		helpers.HttpResponse(w, http.StatusBadRequest, helpers.Response{err.Error(), nil})
+		return
 	}
 	prevOrderID++
 	todo.ID = strconv.Itoa(prevOrderID)
 	todos = append(todos, todo)
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(todo)
+	helpers.HttpResponse(w, http.StatusCreated, helpers.Response{"success", todo})
 }
 
 // GetTodo godoc
@@ -93,24 +93,20 @@ func CreateTodo(w http.ResponseWriter, r *http.Request) {
 // @Tags todos
 // @Accept json
 // @Produce json
-// @Success 200 {object} Todo
+// @Success 200 {object} helpers.Response{data=Todo}
 // @Param id path int true "Todo id"
 // @Router /todos/{id} [get]
-// @Failure 404 {object} ErrorResponse
+// @Failure 404 {object} helpers.Response
 func GetTodo(w http.ResponseWriter, r *http.Request){
 	var todo Todo
-	w.Header().Set("Content-type", "application/json")
 	params := mux.Vars(r)
 	indexTodo := GetIndexTodos(todos, params["id"])
 	if indexTodo == -1 {
-		var errorResponse ErrorResponse
-		errorResponse.Error = "data not found"
-		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode(errorResponse)
+		helpers.HttpResponse(w, http.StatusNotFound, helpers.Response{"data not found", nil})
 		return 
 	}
 	todo = todos[indexTodo]
-	json.NewEncoder(w).Encode(todo)
+	helpers.HttpResponse(w, http.StatusOK, helpers.Response{"success", todo})
 }
 
 // UpdateTodo godoc
@@ -119,27 +115,28 @@ func GetTodo(w http.ResponseWriter, r *http.Request){
 // @Tags todos
 // @Accept json
 // @Produce json
-// @Param todos body Todo true "Update todo"
-// @Success 200 
+// @Param todos body TodoRequest true "Update todo"
+// @Success 200 {object} helpers.Response
 // @Param id path int true "Todo id"
 // @Router /todos/{id} [put]
-// @Failure 404 {object} ErrorResponse
+// @Failure 404 {object} helpers.Response
 func UpdateTodo(w http.ResponseWriter, r *http.Request){
 	var todo Todo
-	w.Header().Set("Content-type", "application/json")
 	params := mux.Vars(r)
-	json.NewDecoder(r.Body).Decode(&todo)
+	err := json.NewDecoder(r.Body).Decode(&todo)
+	if err != nil {
+		fmt.Println("ERROR ", err.Error())
+		helpers.HttpResponse(w, http.StatusBadRequest, helpers.Response{err.Error(), nil})
+		return
+	}
 	indexTodo := GetIndexTodos(todos, params["id"])
 	if indexTodo == -1 {
-		var errorResponse ErrorResponse
-		errorResponse.Error = "data not found"
-		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode(errorResponse)
+		helpers.HttpResponse(w, http.StatusNotFound, helpers.Response{"data not found", nil})
 		return 
 	}
 	todo.ID = params["id"]
 	todos[indexTodo] = todo
-	w.WriteHeader(http.StatusOK)
+	helpers.HttpResponse(w, http.StatusOK, helpers.Response{"success", nil})
 }
 
 // DeleteTodo godoc
@@ -148,23 +145,19 @@ func UpdateTodo(w http.ResponseWriter, r *http.Request){
 // @Tags todos
 // @Accept json
 // @Produce json
-// @Success 200 
+// @Success 200 {object} helpers.Response
 // @Param id path int true "Todo id"
 // @Router /todos/{id} [delete]
-// @Failure 404 {object} ErrorResponse
+// @Failure 404 {object} helpers.Response
 func DeleteTodo(w http.ResponseWriter, r *http.Request){
-	w.Header().Set("Content-type", "application/json")
 	params := mux.Vars(r)
 	indexTodo := GetIndexTodos(todos, params["id"])
 	if indexTodo == -1 {
-		var errorResponse ErrorResponse
-		errorResponse.Error = "data not found"
-		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode(errorResponse)
+		helpers.HttpResponse(w, http.StatusNotFound, helpers.Response{"data not found", nil})
 		return 
 	}
 	todos = append(todos[:indexTodo], todos[indexTodo+1:]...)
-	w.WriteHeader(http.StatusOK)
+	helpers.HttpResponse(w, http.StatusOK, helpers.Response{"success", nil})
 }
 
 func GetIndexTodos(todos []Todo, idTodo string) int {

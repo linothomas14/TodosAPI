@@ -1,6 +1,6 @@
-module final-project-1
+module todosAPI
 
-go 1.14
+go 1.16
 
 require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.1 // indirect

@@ -48,10 +48,22 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/main.Todo"
-                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/helpers.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/main.Todo"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -75,7 +87,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/main.Todo"
+                            "$ref": "#/definitions/main.TodoRequest"
                         }
                     }
                 ],
@@ -83,7 +95,19 @@ var doc = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/main.Todo"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/helpers.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/main.Todo"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -115,13 +139,25 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/main.Todo"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/helpers.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/main.Todo"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/main.ErrorResponse"
+                            "$ref": "#/definitions/helpers.Response"
                         }
                     }
                 }
@@ -145,7 +181,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/main.Todo"
+                            "$ref": "#/definitions/main.TodoRequest"
                         }
                     },
                     {
@@ -158,12 +194,15 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/main.ErrorResponse"
+                            "$ref": "#/definitions/helpers.Response"
                         }
                     }
                 }
@@ -191,12 +230,15 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/main.ErrorResponse"
+                            "$ref": "#/definitions/helpers.Response"
                         }
                     }
                 }
@@ -204,12 +246,14 @@ var doc = `{
         }
     },
     "definitions": {
-        "main.ErrorResponse": {
+        "helpers.Response": {
             "type": "object",
             "properties": {
-                "error": {
-                    "type": "string",
-                    "example": "error"
+                "data": {
+                    "type": "object"
+                },
+                "message": {
+                    "type": "string"
                 }
             }
         },
@@ -217,12 +261,25 @@ var doc = `{
             "type": "object",
             "properties": {
                 "description": {
-                    "type": "string",
-                    "example": "Reading book at 9 A.M"
+                    "type": "string"
                 },
                 "id": {
+                    "type": "string"
+                },
+                "is_complete": {
+                    "type": "boolean"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.TodoRequest": {
+            "type": "object",
+            "properties": {
+                "description": {
                     "type": "string",
-                    "example": "1"
+                    "example": "Reading book at 9 A.M"
                 },
                 "is_complete": {
                     "type": "boolean",
